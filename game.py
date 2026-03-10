@@ -50,6 +50,11 @@ def run_game():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
                     player.shoot()
+            # Enemy reached ground -> subtract points
+            if event.type == pygame.USEREVENT + 1:
+                # event contains {'points': -5}
+                pts = event.__dict__.get('points', -5)
+                score = max(0, score + pts)
 
         # Update
         all_sprites.update()

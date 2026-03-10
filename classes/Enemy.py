@@ -16,4 +16,10 @@ class Enemy(pygame.sprite.Sprite):
         self.rect.y += self.speed
         # Remove if off screen
         if self.rect.top > SCREEN_HEIGHT:
+            # Notify the game that an enemy reached the ground so score can be adjusted
+            try:
+                evt = pygame.event.Event(pygame.USEREVENT + 1, {'points': -5})
+                pygame.event.post(evt)
+            except Exception:
+                pass
             self.kill()
