@@ -4,6 +4,7 @@ from classes.Player import Player
 from classes.Enemy import Enemy
 from config import *
 from sprites_manager import all_sprites, enemies, bullets
+import os
 
 # Import level configs
 import level_1
@@ -16,6 +17,16 @@ pygame.init()
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption("Space Invaders - Starter")
 clock = pygame.time.Clock()
+
+# Load background image (safe: prints error and falls back to solid fill)
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+bg_path = os.path.join(BASE_DIR, 'assets', 'Backround.png')
+background = None
+try:
+    background = pygame.image.load(bg_path)
+    background = pygame.transform.scale(background, (SCREEN_WIDTH, SCREEN_HEIGHT)).convert()
+except Exception as e:
+    print(f"Could not load background image at {bg_path}: {e}")
 
 # Helper: draw centered text
 def draw_text(surface, text, size, color, x, y):
@@ -91,8 +102,12 @@ def run_level(target_score: int, spawn_chance: float, speed_min: int, speed_max:
         if pygame.sprite.spritecollide(player, enemies, True):
             running = False  # Level failed / Game Over
 
-        # Draw
-        screen.fill(BLACK)
+        # Draw background (use image when available, otherwise solid fill)
+        if background:
+            screen.blit(background, (0, 0))
+        else:
+            screen.fill(BLACK)
+        # Draw sprites on top
         all_sprites.draw(screen)
 
         # Draw level and score
