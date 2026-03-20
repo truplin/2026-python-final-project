@@ -23,6 +23,11 @@ class Player(pygame.sprite.Sprite):
         self.rect.centerx = SCREEN_WIDTH // 2
         self.rect.bottom = SCREEN_HEIGHT - 10
         self.speed = 5
+        # mask for pixel-perfect collision
+        try:
+            self.mask = pygame.mask.from_surface(self.image)
+        except Exception:
+            self.mask = None
 
     def update(self):
         keys = pygame.key.get_pressed()

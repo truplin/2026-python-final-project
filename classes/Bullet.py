@@ -10,6 +10,11 @@ class Bullet(pygame.sprite.Sprite):
         self.rect.centerx = x
         self.rect.bottom = y
         self.speed = -7
+        # create mask for pixel-perfect collisions
+        try:
+            self.mask = pygame.mask.from_surface(self.image)
+        except Exception:
+            self.mask = None
 
     def update(self):
         self.rect.y += self.speed

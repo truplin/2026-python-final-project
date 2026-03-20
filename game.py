@@ -84,8 +84,8 @@ def run_level(target_score: int, spawn_chance: float, speed_min: int, speed_max:
             all_sprites.add(enemy)
             enemies.add(enemy)
 
-        # Check for bullet-enemy collisions
-        hits = pygame.sprite.groupcollide(enemies, bullets, True, True)
+        # Check for bullet-enemy collisions (pixel-perfect using masks)
+        hits = pygame.sprite.groupcollide(enemies, bullets, True, True, pygame.sprite.collide_mask)
         for hit in hits:
             score += 10
             if score >= target_score:
@@ -98,8 +98,8 @@ def run_level(target_score: int, spawn_chance: float, speed_min: int, speed_max:
             all_sprites.add(enemy)
             enemies.add(enemy)
 
-        # Check if enemy hit player
-        if pygame.sprite.spritecollide(player, enemies, True):
+        # Check if enemy hit player (pixel-perfect)
+        if pygame.sprite.spritecollide(player, enemies, True, pygame.sprite.collide_mask):
             running = False  # Level failed / Game Over
 
         # Draw background (use image when available, otherwise solid fill)
