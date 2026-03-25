@@ -31,9 +31,15 @@ class Player(pygame.sprite.Sprite):
 
     def update(self):
         keys = pygame.key.get_pressed()
+        # Arrow keys
         if keys[pygame.K_LEFT] and self.rect.left > 0:
             self.rect.x -= self.speed
         if keys[pygame.K_RIGHT] and self.rect.right < SCREEN_WIDTH:
+            self.rect.x += self.speed
+        # WASD keys
+        if keys[pygame.K_a] and self.rect.left > 0:
+            self.rect.x -= self.speed
+        if keys[pygame.K_d] and self.rect.right < SCREEN_WIDTH:
             self.rect.x += self.speed
 
     def shoot(self):
