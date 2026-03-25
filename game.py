@@ -49,6 +49,64 @@ def draw_text(surface, text, size, color, x, y):
     surface.blit(txt, rect)
 
 
+def show_story_screen():
+    """Display the story screen with Star Wars style text"""
+    story_text = [
+        "A long time ago in a galaxy far, far away....",
+        "",
+        "HAN SOLO and CHEWBACCA were flying",
+        "the MILLENNIUM FALCON through space,",
+        "",
+        "when suddenly they were intercepted",
+        "by TIE FIGHTERS!"
+    ]
+    
+    # Story display timing
+    display_duration = 8000  # 8 seconds total
+    start_time = pygame.time.get_ticks()
+    
+    running = True
+    while running:
+        current_time = pygame.time.get_ticks()
+        elapsed = current_time - start_time
+        
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                return 'quit'
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE or event.key == pygame.K_RETURN or event.key == pygame.K_ESCAPE:
+                    return 'start_game'
+            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                return 'start_game'
+        
+        # Auto-advance after display duration
+        if elapsed >= display_duration:
+            return 'start_game'
+        
+        # Draw background
+        if background:
+            screen.blit(background, (0, 0))
+        else:
+            screen.fill(BLACK)
+        
+        # Draw story text
+        y_offset = SCREEN_HEIGHT // 2 - 100
+        for i, line in enumerate(story_text):
+            if line:  # Skip empty lines for fade effect
+                # Create fade-in effect
+                alpha = min(255, (elapsed - i * 500) // 10) if elapsed > i * 500 else 0
+                if alpha > 0:
+                    color = (255, 255, 200, alpha) if alpha < 255 else (255, 255, 200)
+                    draw_text(screen, line, 28, color, SCREEN_WIDTH // 2, y_offset + i * 35)
+        
+        # Draw instruction
+        if elapsed > 2000:  # Show instruction after 2 seconds
+            draw_text(screen, "Press SPACE, ENTER, or click to continue", 20, (150, 150, 150), SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + 200)
+        
+        pygame.display.flip()
+        clock.tick(30)
+
+
 def show_start_screen():
     """Display the start screen with title and start button"""
     while True:
@@ -550,42 +608,47 @@ if __name__ == '__main__':
                         break  # Return to level selection
                 break  # Return to start screen
         if start_result == 'start':
-            # Run Level 1 then Level 2 (harder) when Level 1 is completed
-            while True:
-                res = run_level(level_1.TARGET, spawn_chance=level_1.SPAWN_CHANCE, speed_min=level_1.SPEED_MIN, speed_max=level_1.SPEED_MAX, level_num=level_1.LEVEL_NUM)
-                if res == 'quit':
-                    break
-                if res == 'restart':
-                    continue
-                if res == 'next':
-                    # Level 2: harder settings, target 500
-                    res2 = run_level(level_2.TARGET, spawn_chance=level_2.SPAWN_CHANCE, speed_min=level_2.SPEED_MIN, speed_max=level_2.SPEED_MAX, level_num=level_2.LEVEL_NUM)
-                    if res2 == 'quit':
+            # Show story screen first
+            story_result = show_story_screen()
+            if story_result == 'quit':
+                break
+            if story_result == 'start_game':
+                # Run Level 1 then Level 2 (harder) when Level 1 is completed
+                while True:
+                    res = run_level(level_1.TARGET, spawn_chance=level_1.SPAWN_CHANCE, speed_min=level_1.SPEED_MIN, speed_max=level_1.SPEED_MAX, level_num=level_1.LEVEL_NUM)
+                    if res == 'quit':
                         break
-                    if res2 == 'restart':
+                    if res == 'restart':
                         continue
-                    if res2 == 'next':
-                        # Level 3: Boss battle
-                        res3 = run_boss_battle()
-                        if res3 == 'quit':
+                    if res == 'next':
+                        # Level 2: harder settings, target 500
+                        res2 = run_level(level_2.TARGET, spawn_chance=level_2.SPAWN_CHANCE, speed_min=level_2.SPEED_MIN, speed_max=level_2.SPEED_MAX, level_num=level_2.LEVEL_NUM)
+                        if res2 == 'quit':
                             break
-                        if res3 == 'restart':
+                        if res2 == 'restart':
                             continue
-                        if res3 == 'next':
-                            # Completed all levels: show final congrats then restart loop
-                            while True:
-                                for event in pygame.event.get():
-                                    if event.type == pygame.QUIT:
-                                        pygame.quit()
-                                        raise SystemExit
-                                    if event.type == pygame.KEYDOWN and event.key == pygame.K_r:
-                                        break
-                                screen.fill(BLACK)
-                                draw_text(screen, "Congratulations! You beat all levels!", 36, (0,200,0), SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 - 40)
-                                draw_text(screen, "Press R to return to start screen or close window to quit.", 20, WHITE, SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + 20)
-                                pygame.display.flip()
-                                clock.tick(30)
-                            break  # Return to start screen
+                        if res2 == 'next':
+                            # Level 3: Boss battle
+                            res3 = run_boss_battle()
+                            if res3 == 'quit':
+                                break
+                            if res3 == 'restart':
+                                continue
+                            if res3 == 'next':
+                                # Completed all levels: show final congrats then restart loop
+                                while True:
+                                    for event in pygame.event.get():
+                                        if event.type == pygame.QUIT:
+                                            pygame.quit()
+                                            raise SystemExit
+                                        if event.type == pygame.KEYDOWN and event.key == pygame.K_r:
+                                            break
+                                    screen.fill(BLACK)
+                                    draw_text(screen, "Congratulations! You beat all levels!", 36, (0,200,0), SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 - 40)
+                                    draw_text(screen, "Press R to return to start screen or close window to quit.", 20, WHITE, SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + 20)
+                                    pygame.display.flip()
+                                    clock.tick(30)
+                                break  # Return to start screen
             # After completing or quitting levels, loop back to start screen
 
     pygame.quit()
