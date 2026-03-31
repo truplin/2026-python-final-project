@@ -20,11 +20,11 @@ class Lightsaber(pygame.sprite.Sprite):
         dy = target_y - y
         distance = (dx**2 + dy**2)**0.5
         if distance > 0:
-            self.vel_x = (dx / distance) * 8  # Speed of 8
-            self.vel_y = (dy / distance) * 8
+            self.vel_x = (dx / distance) * 10  # Reduced from 12 to 10
+            self.vel_y = (dy / distance) * 10
         else:
             self.vel_x = 0
-            self.vel_y = 8
+            self.vel_y = 10
             
         # Create mask for pixel-perfect collision
         try:

@@ -1,4 +1,4 @@
-import pygame
+import pygame 
 import random
 from classes.Player import Player
 from classes.Enemy import Enemy
@@ -613,42 +613,46 @@ if __name__ == '__main__':
             if story_result == 'quit':
                 break
             if story_result == 'start_game':
-                # Run Level 1 then Level 2 (harder) when Level 1 is completed
+                # Run story mode with level restart functionality
+                current_level = 1
                 while True:
-                    res = run_level(level_1.TARGET, spawn_chance=level_1.SPAWN_CHANCE, speed_min=level_1.SPEED_MIN, speed_max=level_1.SPEED_MAX, level_num=level_1.LEVEL_NUM)
-                    if res == 'quit':
-                        break
-                    if res == 'restart':
-                        continue
-                    if res == 'next':
-                        # Level 2: harder settings, target 500
-                        res2 = run_level(level_2.TARGET, spawn_chance=level_2.SPAWN_CHANCE, speed_min=level_2.SPEED_MIN, speed_max=level_2.SPEED_MAX, level_num=level_2.LEVEL_NUM)
-                        if res2 == 'quit':
+                    if current_level == 1:
+                        res = run_level(level_1.TARGET, spawn_chance=level_1.SPAWN_CHANCE, speed_min=level_1.SPEED_MIN, speed_max=level_1.SPEED_MAX, level_num=level_1.LEVEL_NUM)
+                        if res == 'quit':
                             break
-                        if res2 == 'restart':
-                            continue
-                        if res2 == 'next':
-                            # Level 3: Boss battle
-                            res3 = run_boss_battle()
-                            if res3 == 'quit':
-                                break
-                            if res3 == 'restart':
-                                continue
-                            if res3 == 'next':
-                                # Completed all levels: show final congrats then restart loop
-                                while True:
-                                    for event in pygame.event.get():
-                                        if event.type == pygame.QUIT:
-                                            pygame.quit()
-                                            raise SystemExit
-                                        if event.type == pygame.KEYDOWN and event.key == pygame.K_r:
-                                            break
-                                    screen.fill(BLACK)
-                                    draw_text(screen, "Congratulations! You beat all levels!", 36, (0,200,0), SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 - 40)
-                                    draw_text(screen, "Press R to return to start screen or close window to quit.", 20, WHITE, SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + 20)
-                                    pygame.display.flip()
-                                    clock.tick(30)
-                                break  # Return to start screen
-            # After completing or quitting levels, loop back to start screen
+                        if res == 'restart':
+                            continue  # Restart Level 1
+                        if res == 'next':
+                            current_level = 2  # Move to Level 2
+                    elif current_level == 2:
+                        res = run_level(level_2.TARGET, spawn_chance=level_2.SPAWN_CHANCE, speed_min=level_2.SPEED_MIN, speed_max=level_2.SPEED_MAX, level_num=level_2.LEVEL_NUM)
+                        if res == 'quit':
+                            break
+                        if res == 'restart':
+                            continue  # Restart Level 2
+                        if res == 'next':
+                            current_level = 3  # Move to Level 3
+                    elif current_level == 3:
+                        res = run_boss_battle()
+                        if res == 'quit':
+                            break
+                        if res == 'restart':
+                            continue  # Restart Level 3
+                        if res == 'next':
+                            # Completed all levels: show final congrats then restart loop
+                            while True:
+                                for event in pygame.event.get():
+                                    if event.type == pygame.QUIT:
+                                        pygame.quit()
+                                        raise SystemExit
+                                    if event.type == pygame.KEYDOWN and event.key == pygame.K_r:
+                                        break
+                                screen.fill(BLACK)
+                                draw_text(screen, "Congratulations! You beat all levels!", 36, (0,200,0), SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 - 40)
+                                draw_text(screen, "Press R to return to start screen or close window to quit.", 20, WHITE, SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + 20)
+                                pygame.display.flip()
+                                clock.tick(30)
+                            break  # Return to start screen
+                # After completing or quitting levels, loop back to start screen
 
     pygame.quit()
