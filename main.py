@@ -107,6 +107,50 @@ def show_story_screen():
         clock.tick(30)
 
 
+def show_lucasfilm_splash():
+    """Display Lucasfilm splash screen"""
+    splash_duration = 3000  # 3 seconds
+    start_time = pygame.time.get_ticks()
+    
+    running = True
+    while running:
+        current_time = pygame.time.get_ticks()
+        elapsed = current_time - start_time
+        
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                return 'quit'
+            if event.type == pygame.KEYDOWN or event.type == pygame.MOUSEBUTTONDOWN:
+                # Allow skipping the splash screen
+                return 'continue'
+        
+        # Auto-advance after splash duration
+        if elapsed >= splash_duration:
+            return 'continue'
+        
+        # Draw background
+        if background:
+            screen.blit(background, (0, 0))
+        else:
+            screen.fill(BLACK)
+        
+        # Draw Lucasfilm text with fade-in effect
+        alpha = min(255, (elapsed // 10)) if elapsed > 0 else 0
+        if alpha > 0:
+            # Create a font for the Lucasfilm text
+            font = pygame.font.Font(None, 72)
+            text = font.render("LUCASFILM", True, (255, 255, 255))
+            text_rect = text.get_rect()
+            text_rect.center = (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)
+            
+            # Apply fade effect by drawing with alpha
+            text.set_alpha(alpha)
+            screen.blit(text, text_rect)
+        
+        pygame.display.flip()
+        clock.tick(30)
+
+
 def show_start_screen():
     """Display the start screen with title and start button"""
     while True:
@@ -520,6 +564,12 @@ def run_boss_battle():
 
 
 if __name__ == '__main__':
+    # Show Lucasfilm splash screen first
+    splash_result = show_lucasfilm_splash()
+    if splash_result == 'quit':
+        pygame.quit()
+        raise SystemExit
+    
     # Show start screen first
     while True:
         start_result = show_start_screen()
