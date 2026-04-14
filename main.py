@@ -1,4 +1,4 @@
-import pygame 
+import pygame
 import random
 from classes.Player import Player
 from classes.Enemy import Enemy

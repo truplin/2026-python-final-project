@@ -4,12 +4,23 @@ from config import *
 class Lightsaber(pygame.sprite.Sprite):
     def __init__(self, x, y, target_x, target_y):
         super().__init__()
-        # Create a lightsaber visual (rectangular with glow effect)
-        self.image = pygame.Surface((60, 8), pygame.SRCALPHA)
-        # Draw the lightsaber blade
-        pygame.draw.rect(self.image, (0, 255, 0), (0, 2, 60, 4))  # Green blade
-        pygame.draw.rect(self.image, (150, 255, 150), (0, 1, 60, 2))  # Glow effect top
-        pygame.draw.rect(self.image, (150, 255, 150), (0, 5, 60, 2))  # Glow effect bottom
+        # Load lightsaber image from assets
+        import os
+        BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        lightsaber_path = os.path.join(BASE_DIR, 'assets', 'Lightsaber.png.jpg')
+        
+        try:
+            self.image = pygame.image.load(lightsaber_path).convert_alpha()
+            # Scale lightsaber image to be skinnier
+            self.image = pygame.transform.scale(self.image, (100, 6))  # Skinnier width
+        except Exception as e:
+            print(f"Could not load lightsaber image at {lightsaber_path}: {e}")
+            # Fallback to programmatically drawn lightsaber
+            self.image = pygame.Surface((100, 6), pygame.SRCALPHA)
+            # Draw the lightsaber blade
+            pygame.draw.rect(self.image, (0, 255, 0), (0, 1, 100, 4))  # Green blade
+            pygame.draw.rect(self.image, (150, 255, 150), (0, 0, 100, 1))  # Glow effect top
+            pygame.draw.rect(self.image, (150, 255, 150), (0, 5, 100, 1))  # Glow effect bottom
         
         self.rect = self.image.get_rect()
         self.rect.centerx = x
